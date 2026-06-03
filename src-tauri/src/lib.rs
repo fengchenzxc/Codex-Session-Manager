@@ -8,13 +8,14 @@ use std::{
     env,
     fs::{self, File},
     io::{BufRead, BufReader, Read, Seek, SeekFrom, Write},
-    os::unix::fs::PermissionsExt,
     path::{Path, PathBuf},
     process::{Command, Stdio},
     sync::{mpsc, Mutex},
     thread,
     time::Duration,
 };
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 use tauri::State;
 use uuid::Uuid;
 use walkdir::WalkDir;
@@ -489,9 +490,12 @@ exit "$status"
         session_id = shell_quote(session_id)
     );
     fs::write(&script_path, script)?;
-    let mut permissions = fs::metadata(&script_path)?.permissions();
-    permissions.set_mode(0o700);
-    fs::set_permissions(&script_path, permissions)?;
+    #[cfg(unix)]
+    {
+        let mut permissions = fs::metadata(&script_path)?.permissions();
+        permissions.set_mode(0o700);
+        fs::set_permissions(&script_path, permissions)?;
+    }
     Ok(script_path)
 }
 

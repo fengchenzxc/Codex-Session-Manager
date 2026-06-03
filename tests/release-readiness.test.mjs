@@ -58,6 +58,14 @@ test("release workflow builds complete macOS and Windows assets", () => {
   assert.equal(existsSync(new URL("src-tauri/icons/icon.ico", root)), true);
 });
 
+test("resume script permissions are gated for Windows release builds", () => {
+  const libRs = read("src-tauri/src/lib.rs");
+
+  assert.match(libRs, /#\[cfg\(unix\)\]\s*use std::os::unix::fs::PermissionsExt;/);
+  assert.doesNotMatch(libRs, /\n\s+os::unix::fs::PermissionsExt,/);
+  assert.match(libRs, /#\[cfg\(unix\)\]\s*\{\s*let mut permissions = fs::metadata\(&script_path\)\?\.permissions\(\);[\s\S]*?permissions\.set_mode\(0o700\);[\s\S]*?fs::set_permissions\(&script_path, permissions\)\?;[\s\S]*?\}/);
+});
+
 test("release helpers and ignore rules keep local artifacts out of git", () => {
   const gitignore = read(".gitignore");
 
