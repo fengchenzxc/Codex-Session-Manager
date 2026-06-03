@@ -4,7 +4,7 @@ Codex Session Manager is a Tauri desktop app for inspecting, repairing, copying,
 
 It is designed for people who use Codex across multiple projects or providers and need a safer way to understand why a session appears, disappears, or cannot be opened in Codex Desktop.
 
-[中文说明](README.zh-CN.md)
+[中文说明](README.md)
 
 ![Codex Session Manager screenshot](docs/images/app-overview.png)
 
