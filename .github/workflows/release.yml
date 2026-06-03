@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version, for example v0.1.0"
+        required: true
+        default: "v0.1.0"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macos-x64
+            runner: macos-15-intel
+            rust-targets: x86_64-apple-darwin
+            tauri-target: x86_64-apple-darwin
+            bundle-args: --bundles app,dmg
+          - name: macos-arm64
+            runner: macos-15
+            rust-targets: aarch64-apple-darwin
+            tauri-target: aarch64-apple-darwin
+            bundle-args: --bundles app,dmg
+          - name: macos-universal
+            runner: macos-15
+            rust-targets: x86_64-apple-darwin aarch64-apple-darwin
+            tauri-target: universal-apple-darwin
+            bundle-args: --bundles app,dmg
+          - name: windows-x64
+            runner: windows-2025
+            rust-targets: x86_64-pc-windows-msvc
+            tauri-target: x86_64-pc-windows-msvc
+            bundle-args: --bundles msi,nsis
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust targets
+        shell: bash
+        run: |
+          for target in ${{ matrix.rust-targets }}; do
+            rustup target add "$target"
+          done
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Check release version
+        run: node scripts/check-version.mjs
+        env:
+          RELEASE_VERSION: ${{ inputs.version || github.ref_name }}
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build and upload release assets
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ inputs.version || github.ref_name }}
+          releaseName: "Codex Session Manager ${{ inputs.version || github.ref_name }}"
+          releaseBody: "Automated desktop release for macOS and Windows."
+          releaseDraft: false
+          prerelease: false
+          args: --target ${{ matrix.tauri-target }} ${{ matrix.bundle-args }}
+          releaseAssetNamePattern: "[name]_[version]_[platform]_[arch]_[setup].[ext]"
