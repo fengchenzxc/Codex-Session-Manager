@@ -12,9 +12,10 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc && vite build",
     "check:version": "node scripts/check-version.mjs",
+    "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "test": "node --test tests/*.test.mjs"
+    "test": "node scripts/run-tests.mjs"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.5.0",

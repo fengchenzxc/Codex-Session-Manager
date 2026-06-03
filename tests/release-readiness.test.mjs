@@ -18,6 +18,8 @@ test("open-source metadata is present and versioned consistently", () => {
   assert.equal(tauriConfig.version, packageJson.version);
   assert.equal(packageJson.private, false);
   assert.equal(packageJson.license, "MIT");
+  assert.equal(packageJson.scripts.test, "node scripts/run-tests.mjs");
+  assert.equal(packageJson.scripts.tauri, "tauri");
   assert.match(cargoToml, /license = "MIT"/);
   assert.match(cargoToml, /repository = "https:\/\/github\.com\/fengchenzxc\/Codex-Session-Manager"/);
   assert.match(read("LICENSE"), /MIT License/);
@@ -51,12 +53,15 @@ test("release workflow builds complete macOS and Windows assets", () => {
   assert.match(workflow, /--bundles msi,nsis/);
   assert.match(workflow, /scripts\/check-version\.mjs/);
   assert.match(workflow, /GITHUB_TOKEN/);
+  assert.match(workflow, /assetNamePattern/);
+  assert.doesNotMatch(workflow, /releaseAssetNamePattern/);
 });
 
 test("release helpers and ignore rules keep local artifacts out of git", () => {
   const gitignore = read(".gitignore");
 
   assert.equal(existsSync(new URL("scripts/check-version.mjs", root)), true);
+  assert.equal(existsSync(new URL("scripts/run-tests.mjs", root)), true);
   assert.match(gitignore, /node_modules\//);
   assert.match(gitignore, /dist\//);
   assert.match(gitignore, /src-tauri\/target\//);
