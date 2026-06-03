@@ -55,6 +55,7 @@ test("release workflow builds complete macOS and Windows assets", () => {
   assert.match(workflow, /GITHUB_TOKEN/);
   assert.match(workflow, /assetNamePattern/);
   assert.doesNotMatch(workflow, /releaseAssetNamePattern/);
+  assert.equal(existsSync(new URL("src-tauri/icons/icon.ico", root)), true);
 });
 
 test("release helpers and ignore rules keep local artifacts out of git", () => {

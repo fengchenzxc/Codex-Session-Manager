@@ -29,6 +29,7 @@
     "category": "DeveloperTool",
     "icon": [
       "icons/icon.icns",
+      "icons/icon.ico",
       "icons/icon.png"
     ],
     "macOS": {
