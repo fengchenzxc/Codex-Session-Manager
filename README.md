@@ -3,6 +3,7 @@
 Codex Session Manager 是一个 Tauri 桌面应用，用于查看、修复、复制、迁移、备份和清理 Codex Desktop/CLI 会话。
 
 它适合经常在多个项目或多个 Provider 之间使用 Codex 的用户，帮助你更安全地判断一个会话为什么会出现在 Codex Desktop 侧边栏、为什么消失，或者为什么搜索得到但无法打开。
+
 Codex Session Manager is a Tauri desktop app for inspecting, repairing, copying, migrating, backing up, and cleaning Codex Desktop/CLI sessions.
 
 It is designed for people who use Codex across multiple projects or providers and need a safer way to understand why a session appears, disappears, or cannot be opened in Codex Desktop.
